@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>ToolFlow - ระบบยืมคืนอุปกรณ์</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- QR Scanner -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+
+<body>
+
+<header class="top-header">
+
+  <button
+    id="back-button"
+    class="back-button"
+    onclick="goBack()"
+    style="display:none;"
+  >
+    ←
+  </button>
+
+  <div class="header-title"><svg class="brand-mark" viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><path d="M20.0,4.5L21.7,1.1L24.3,1.5L24.8,5.3L27.0,6.2L29.1,7.5L32.5,5.7L34.3,7.5L32.5,10.9L33.8,13.0L34.7,15.2L38.5,15.7L38.9,18.3L35.5,20.0L35.3,22.4L34.7,24.8L37.5,27.4L36.3,29.8L32.5,29.1L31.0,31.0L29.1,32.5L29.8,36.3L27.4,37.5L24.8,34.7L22.4,35.3L20.0,35.5L18.3,38.9L15.7,38.5L15.2,34.7L13.0,33.8L10.9,32.5L7.5,34.3L5.7,32.5L7.5,29.1L6.2,27.0L5.3,24.8L1.5,24.3L1.1,21.7L4.5,20.0L4.7,17.6L5.3,15.2L2.5,12.6L3.7,10.2L7.5,10.9L9.0,9.0L10.9,7.5L10.2,3.7L12.6,2.5L15.2,5.3L17.6,4.7Z" fill="#ffffff"/><circle cx="20" cy="20" r="10.5" fill="#04245d"/><rect x="13" y="14" width="14" height="4.2" rx="1" fill="#fff"/><rect x="18" y="17" width="4.2" height="10" rx="1" fill="#fff"/></svg><span class="brand-word">TOOLFLOW</span><span class="brand-sep"></span><h1 id="page-title">หน้าหลัก</h1></div>
+
+  <button
+    id="logout-button"
+    class="logout-button"
+    onclick="handleLogout()"
+    style="display:none;"
+  >
+    ออกจากระบบ
+  </button>
+
+</header>
+
+
+<main class="main-container">
+
+
+<!-- ==================================================
+     LOGIN
+================================================== -->
+
+<section id="login" class="view active">
+  <div class="login-container">
+    <img class="login-logo-img" src="logo.png" alt="TOOLFLOW - Seamless Disbursement & Circulation">
+    <h2>Sign in to continue.</h2>
+    <div class="role-selector" style="display:none">
+      <button id="role-user" class="role-button active" type="button" onclick="selectRole('user')">👤 <span>ผู้ใช้งาน</span></button>
+      <button id="role-admin" class="role-button" type="button" onclick="selectRole('admin')">🛠️ <span>ผู้ดูแล</span></button>
+    </div>
+    <form id="login-form">
+      <input type="text" id="username" class="login-input" placeholder="Name (รหัสนักศึกษา)" autocomplete="username" required>
+      <div class="pw-wrap">
+        <input type="password" id="password" class="login-input" placeholder="Password (รหัสผ่าน)" autocomplete="current-password" required>
+        <button type="button" class="pw-toggle" onclick="togglePw()" aria-label="แสดง/ซ่อนรหัสผ่าน"><svg viewBox="0 0 24 24" width="22" height="22" fill="#0b4ba8" aria-hidden="true"><path d="M6 10V8a6 6 0 1112 0v2h1a1 1 0 011 1v9a1 1 0 01-1 1H5a1 1 0 01-1-1v-9a1 1 0 011-1h1zm2 0h8V8a4 4 0 10-8 0v2zm4 4a1.5 1.5 0 00-.75 2.8V18h1.5v-1.2A1.5 1.5 0 0012 14z"/></svg></button>
+      </div>
+      <button type="submit" class="login-btn">Login</button>
+    </form>
+  </div>
+</section>
+
+
+
+<!-- ==================================================
+     USER DASHBOARD
+================================================== -->
+
+<section id="user-dashboard" class="view">
+<div class="uh-phone">
+
+  <!-- ===== หน้าหลัก ===== -->
+  <div class="uh-panel active" data-panel="home">
+    
+    
+    <div class="uh-profile">
+      <div class="uh-avatar"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+      <div class="uh-pinfo">
+        <strong>คุณ <span id="user-welcome-name">-</span></strong>
+        <span class="uh-ready" id="user-welcome-department">-</span>
+      </div>
+      <button type="button" class="uh-cog" id="uh-cog" aria-label="โปรไฟล์"></button>
+    </div>
+
+    <div class="uh-hero">
+      <button type="button" class="uh-bell" id="uh-bell">
+        <span class="uh-bell-ico">
+          <svg viewBox="0 0 24 24" width="34" height="34" fill="#dfe8f2" stroke="#2a4f82" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0112 0v5l2 2H4z"/><path d="M10 21a2 2 0 004 0"/></svg>
+          <i class="uh-badge" id="uh-badge" style="display:none">0</i>
+        </span>
+        <span class="uh-bell-text">การแจ้งเตือน</span>
+      </button>
+      <div id="uh-hero-art"></div>
+    </div>
+
+    <div class="uh-stats">
+      <div class="uh-stat"><span>อัตราความพร้อมของคลัง</span><strong id="uh-eff">-</strong></div>
+      <div class="uh-stat"><span>เครื่องมือพร้อมใช้งาน</span><strong id="uh-ready">-</strong></div>
+    </div>
+
+    <div class="uh-sec-head"><h3>อุปกรณ์แนะนำ</h3><button type="button" class="uh-link" id="uh-quick">ดูทั้งหมด</button></div>
+    <div class="uh-tools" id="uh-tools"></div>
+  </div>
+
+  <!-- ===== รายการเบิก-คืน ===== -->
+  <div class="uh-panel" data-panel="list">
+    <div class="uh-title">รายการเบิก-คืน</div>
+    <div class="card">
+      <div class="section-title"><h2>อุปกรณ์ที่กำลังยืม</h2></div>
+      <div id="current-borrow-list"></div>
+    </div>
+    <div class="card">
+      <div class="section-title"><h2>ประวัติการยืมคืน</h2></div>
+      <div id="user-history-list"></div>
+    </div>
+  </div>
+
+  <!-- ===== สถิติ ===== -->
+  <div class="uh-panel" data-panel="stats">
+    <div class="uh-title">สถิติ</div>
+    <div class="uh-stats">
+      <div class="uh-stat"><span>อัตราความพร้อมของคลัง</span><strong id="uh-eff2">-</strong></div>
+      <div class="uh-stat"><span>เครื่องมือพร้อมใช้งาน</span><strong id="uh-ready2">-</strong></div>
+    </div>
+    <div class="card">
+      <div class="section-title"><h2>ของฉัน</h2></div>
+      <div class="uh-statgrid">
+        <div><strong id="u-stat-borrowed">0</strong><span>กำลังยืม</span></div>
+        <div><strong id="u-stat-pending">0</strong><span>รอยืนยัน</span></div>
+        <div><strong id="u-stat-overdue">0</strong><span>เกินกำหนด</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title"><h2>ภาพรวมคลัง</h2></div>
+      <div class="uh-statgrid four">
+        <div><strong id="uh-s-total">0</strong><span>ทั้งหมด</span></div>
+        <div><strong id="uh-s-avail">0</strong><span>พร้อมใช้</span></div>
+        <div><strong id="uh-s-borrowed">0</strong><span>ถูกยืม</span></div>
+        <div><strong id="uh-s-damaged">0</strong><span>ชำรุด</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== โปรไฟล์ ===== -->
+  <div class="uh-panel" data-panel="profile">
+    <div class="uh-title">โปรไฟล์</div>
+    <div class="card">
+      <div class="section-title"><h2>ข้อมูลผู้ใช้งาน</h2></div>
+      <div class="user-info-grid">
+        <div class="info-item"><span>ชื่อ-นามสกุล</span><strong id="user-name">-</strong></div>
+        <div class="info-item"><span>รหัสพนักงาน</span><strong id="user-employee-id">-</strong></div>
+        <div class="info-item"><span>คณะ/สาขา</span><strong id="user-department">-</strong></div>
+        <div class="info-item"><span>สถานะ</span><strong class="status-active">● ใช้งาน</strong></div>
+      </div>
+    </div>
+    <button type="button" class="uh-logout" id="uh-logout">ออกจากระบบ</button>
+  </div>
+
+  <!-- ===== SCAN QR + แถบเมนูล่าง ===== -->
+  <button type="button" class="uh-scan" id="uh-scan">สแกน QR Code</button>
+  <nav class="uh-nav">
+    <button type="button" class="active" data-tab="home">
+      <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/></svg>
+      <span>หน้าหลัก</span>
+    </button>
+    <button type="button" data-tab="list">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+      <span>รายการเบิก-คืน</span>
+    </button>
+    <button type="button" data-go="catalog">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg>
+      <span>สต๊อกเครื่องมือ</span>
+    </button>
+    <button type="button" data-tab="stats">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>
+      <span>สถิติ</span>
+    </button>
+    <button type="button" data-tab="profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+      <span>โปรไฟล์</span>
+    </button>
+  </nav>
+
+</div>
+</section>
+
+
+
+<!-- ==================================================
+     USER HISTORY
+================================================== -->
+
+<section id="user-history" class="view">
+
+  <div class="section-title">
+
+    <h2>ประวัติการยืมคืน</h2>
+
+    <p>
+      รายการยืมและคืนอุปกรณ์ของฉัน
+    </p>
+
+  </div>
+
+  <div id="user-history-list"></div>
+
+</section>
+
+
+
+<!-- ==================================================
+     ADMIN DASHBOARD
+================================================== -->
+
+<section id="admin-dashboard" class="view">
+
+  <div class="admin-welcome">
+
+    <div>
+
+      <p>ระบบผู้ดูแล</p>
+
+      <h2>
+        Dashboard
+      </h2>
+
+    </div>
+
+    <div class="admin-icon">
+      
+    </div>
+
+  </div>
+
+
+  <div class="stats-grid">
+
+    <div class="stat-card">
+
+      <div class="stat-icon">
+        
+      </div>
+
+      <div>
+
+        <span>
+          อุปกรณ์ทั้งหมด
+        </span>
+
+        <strong id="stat-total-equipment">
+          0
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-icon">
+        
+      </div>
+
+      <div>
+
+        <span>
+          พร้อมใช้งาน
+        </span>
+
+        <strong id="stat-available">
+          0
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-icon">
+        
+      </div>
+
+      <div>
+
+        <span>
+          กำลังถูกยืม
+        </span>
+
+        <strong id="stat-borrowed">
+          0
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-icon">
+        
+      </div>
+
+      <div>
+
+        <span>
+          ผู้ใช้งาน
+        </span>
+
+        <strong id="stat-users">
+          0
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-icon">
+        
+      </div>
+
+      <div>
+
+        <span>
+          ชำรุด
+        </span>
+
+        <strong id="stat-damaged">
+          0
+        </strong>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- QR SCAN -->
+
+  <div class="card">
+
+    <button
+      class="scan-qr-button full-width"
+      onclick="openQRScanner()"
+    >
+
+      <span class="scan-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#2750a8" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
+
+      <span class="scan-button-text">
+
+        <strong>
+          สแกน QR Code
+        </strong>
+
+        <small>
+          สแกนเพื่อดูข้อมูลและทำรายการยืม-คืน
+        </small>
+
+      </span>
+
+      <span class="scan-arrow">
+        ›
+      </span>
+
+    </button>
+
+  </div>
+
+
+
+  <div id="approval-box"></div>
+<div class="section-title">
+
+    <h2>
+      จัดการอุปกรณ์
+    </h2>
+
+  </div>
+
+
+  <div class="admin-toolbar">
+
+    <button
+      class="primary-button"
+      onclick="openEquipmentModal()"
+    >
+      เพิ่มอุปกรณ์
+    </button>
+
+    <button
+      class="secondary-button"
+      onclick="openLogsModal()"
+    >
+      ดู Log
+    </button>
+
+    <button
+      class="warning-button"
+      onclick="openDamagedModal()"
+    >
+      อุปกรณ์ชำรุด
+    </button>
+<button class="secondary-button" onclick="switchView('reports')">รายงาน</button>
+
+
+  </div>
+
+
+  <div
+    id="category-list"
+    class="category-list"
+  ></div>
+
+
+  <div class="search-box">
+
+    <span></span>
+
+    <input
+      type="text"
+      id="equipment-search"
+      placeholder="ค้นหาอุปกรณ์..."
+    >
+
+  </div>
+
+
+  <div id="equipment-list"></div>
+
+</section>
+
+
+
+<!-- ==================================================
+     QR SCANNER
+================================================== -->
+
+<section id="qr-scanner" class="view">
+
+  <div class="section-title">
+
+    <h2>
+      สแกน QR Code
+    </h2>
+
+    <p>
+      สแกน QR Code เพื่อดูข้อมูลและทำรายการยืม
+    </p>
+
+  </div>
+
+
+  <div class="scanner-card">
+
+    <div class="scanner-title">
+      กล้องสแกน QR Code
+    </div>
+
+    <p class="scanner-description">
+
+      กรุณาอนุญาตให้เว็บไซต์เข้าถึงกล้อง
+      แล้วนำ QR Code ของผู้ใช้งานมาไว้ในกรอบ
+
+    </p>
+
+
+    <div id="qr-reader"></div>
+
+
+    <div
+      id="scanner-status"
+      class="scanner-status"
+    >
+      พร้อมสแกน QR Code
+    </div>
+
+
+    <button
+      class="secondary-button full-width mock-scan-button"
+      onclick="simulateQRScan()"
+    >
+      จำลองการสแกน QR Code
+    </button>
+
+
+    <!-- SCAN RESULT -->
+
+    <div
+      id="qr-result"
+      class="scan-result"
+      style="display:none;"
+    >
+
+      <div class="result-icon">
+        
+      </div>
+
+      <div class="result-content">
+
+        <h3 id="scan-user-name">
+          -
+        </h3>
+
+
+        <div class="result-row">
+
+          <span>
+            รหัสอุปกรณ์
+          </span>
+
+          <strong id="scan-user-id">
+            -
+          </strong>
+
+        </div>
+
+
+        <div class="result-row">
+
+          <span>
+            แผนก
+          </span>
+
+          <strong id="scan-user-department">
+            -
+          </strong>
+
+        </div>
+
+
+        <div class="scan-borrow-info">
+
+          <span>
+            อุปกรณ์ที่กำลังยืม
+          </span>
+
+          <strong id="scan-borrow-count">
+            0 รายการ
+          </strong>
+
+        </div>
+
+
+        <!-- ACTION BUTTON -->
+
+        <button
+          class="primary-button full-width scan-action-button"
+          onclick="openBorrowReturnModal()"
+        >
+          ทำรายการยืม / คืน
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- AFTER SCAN: แสดงหลังสแกนเสร็จเท่านั้น -->
+
+    <div id="scan-after" class="scan-after" style="display:none;">
+
+      <div class="scan-search-panel">
+        <div class="scan-search-head"><h3>ค้นหาอุปกรณ์ / สต็อกคงเหลือ</h3><div id="scan-stats" class="scan-stats"></div></div>
+        <div class="search-box"><span></span><input type="text" id="scan-search" placeholder="ค้นหาชื่อ รหัส หรือตำแหน่งอุปกรณ์..." autocomplete="off"></div>
+        <div id="scan-categories" class="category-list"></div>
+        <div id="scan-list" class="scan-list"></div>
+      </div>
+
+    </div>
+
+
+    <button
+      class="secondary-button full-width"
+      onclick="closeQRScanner()"
+    >
+      ← กลับหน้าผู้ดูแล
+    </button>
+
+  </div>
+
+</section>
+
+
+<section id="catalog" class="view">
+  <div class="section-title"><h2>ค้นหาอุปกรณ์ / สต็อกคงเหลือ</h2><p id="catalog-stats"></p></div>
+  <div class="search-box"><span></span><input type="text" id="catalog-search" placeholder="ค้นหาชื่อ หรือ รหัสอุปกรณ์..."></div>
+  <div id="catalog-categories" class="category-list"></div>
+  <div id="catalog-list"></div>
+</section>
+
+<section id="equipment-detail" class="view"><div id="detail-card"></div></section>
+
+<section id="reports" class="view">
+  <div class="section-title"><h2>รายงานสรุป</h2></div>
+  <div id="report-body"></div>
+</section>
+
+
+
+
+
+<!-- ==================================================
+     BORROW / RETURN MODAL
+================================================== -->
+
+<div
+  id="borrow-return-modal"
+  class="modal-overlay"
+  style="display:none;"
+>
+
+  <div class="modal borrow-modal">
+
+    <div class="modal-header">
+
+      <div>
+
+        <h2>
+          ทำรายการยืม / คืน
+        </h2>
+
+        <p
+          id="transaction-user"
+          class="modal-subtitle"
+        >
+          -
+        </p>
+
+      </div>
+
+      <button
+        class="modal-close"
+        onclick="closeBorrowReturnModal()"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <!-- USER INFO -->
+
+    <div class="transaction-user-card">
+
+      <div class="transaction-user-icon">
+        
+      </div>
+
+      <div>
+
+        <strong id="transaction-user-name">
+          -
+        </strong>
+
+        <span id="transaction-user-id">
+          -
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- TYPE -->
+
+    <div class="form-group">
+
+      <label>
+        ประเภทรายการ
+      </label>
+
+
+      <div class="transaction-type">
+
+        <button
+          type="button"
+          id="transaction-borrow"
+          class="transaction-type-button active"
+          onclick="selectTransactionType('borrow')"
+        >
+          
+          <span>
+            ยืมอุปกรณ์
+          </span>
+        </button>
+
+
+        <button
+          type="button"
+          id="transaction-return"
+          class="transaction-type-button"
+          onclick="selectTransactionType('return')"
+        >
+          
+          <span>
+            คืนอุปกรณ์
+          </span>
+        </button>
+
+
+        <button
+          type="button"
+          id="transaction-damaged"
+          class="transaction-type-button"
+          onclick="selectTransactionType('damaged')"
+        >
+          
+          <span>
+            แจ้งชำรุด
+          </span>
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- EQUIPMENT -->
+
+    <div class="form-group">
+
+      <label for="transaction-equipment">
+        อุปกรณ์
+      </label>
+
+      <select
+        id="transaction-equipment"
+        class="form-select"
+      >
+
+      </select>
+
+      <small
+        id="equipment-availability"
+        class="field-help"
+      >
+        -
+      </small>
+
+    </div>
+
+
+    <!-- QUANTITY -->
+
+    <div class="form-group">
+
+      <label for="transaction-quantity">
+        จำนวน
+      </label>
+
+      <input
+        type="number"
+        id="transaction-quantity"
+        class="quantity-input"
+        min="1"
+        value="1"
+      >
+
+    </div>
+
+
+    <!-- DUE DATE -->
+
+    <div
+      id="due-date-group"
+      class="form-group"
+    >
+
+      <label for="transaction-due-date">
+        กำหนดคืน
+      </label>
+
+      <input
+        type="datetime-local"
+        id="transaction-due-date"
+      >
+
+    </div>
+
+
+    <!-- SUMMARY -->
+
+    <div
+      id="transaction-summary"
+      class="transaction-summary"
+    >
+      กรุณาเลือกอุปกรณ์
+    </div>
+
+
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        class="secondary-button"
+        onclick="closeBorrowReturnModal()"
+      >
+        ยกเลิก
+      </button>
+
+      <button
+        type="button"
+        class="primary-button"
+        onclick="confirmTransaction()"
+      >
+        ยืนยันรายการ
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ==================================================
+     EQUIPMENT MODAL
+================================================== -->
+
+<div
+  id="equipment-modal"
+  class="modal-overlay"
+  style="display:none;"
+>
+
+  <div class="modal">
+
+    <div class="modal-header">
+
+      <h2 id="equipment-modal-title">
+        เพิ่มอุปกรณ์
+      </h2>
+
+      <button
+        class="modal-close"
+        onclick="closeEquipmentModal()"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <form id="equipment-form">
+
+      <input
+        type="hidden"
+        id="equipment-id"
+      >
+
+
+      <div class="form-group">
+
+        <label>
+          รหัสอุปกรณ์
+        </label>
+
+        <input
+          type="text"
+          id="equipment-code"
+          placeholder="เช่น EQ-005"
+          required
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>
+          ชื่ออุปกรณ์
+        </label>
+
+        <input
+          type="text"
+          id="equipment-name"
+          placeholder="ชื่ออุปกรณ์"
+          required
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>
+          หมวดหมู่
+        </label>
+
+        <input
+          type="text"
+          id="equipment-category"
+          placeholder="เช่น สว่าน"
+          required
+        >
+
+      </div>
+<div class="form-group"><label>ตำแหน่งจัดเก็บ</label><input type="text" id="equipment-location" placeholder="เช่น ชั้นวาง A, ตู้ B" required></div>
+<div class="form-group"><label>รูปภาพประกอบ</label><input type="file" id="equipment-image" accept="image/*"></div>
+<div class="form-group"><label><input type="checkbox" id="equipment-highvalue" style="width:auto;margin-right:6px">มูลค่าสูง (ต้องให้ผู้ดูแลอนุมัติการเบิก-คืน)</label></div>
+
+
+      <div class="form-group">
+
+        <label>
+          จำนวนทั้งหมด
+        </label>
+
+        <input
+          type="number"
+          id="equipment-total"
+          min="0"
+          required
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>
+          จำนวนที่พร้อมใช้งาน
+        </label>
+
+        <input
+          type="number"
+          id="equipment-stock"
+          min="0"
+          required
+        >
+
+      </div>
+
+
+      <div class="modal-actions">
+
+        <button
+          type="button"
+          class="secondary-button"
+          onclick="closeEquipmentModal()"
+        >
+          ยกเลิก
+        </button>
+
+        <button
+          type="submit"
+          class="primary-button"
+        >
+          บันทึก
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+
+<!-- ==================================================
+     LOG MODAL
+================================================== -->
+
+<div
+  id="logs-modal"
+  class="modal-overlay"
+  style="display:none;"
+>
+
+  <div class="modal modal-large">
+
+    <div class="modal-header">
+
+      <h2>
+        ประวัติการยืมคืน
+      </h2>
+
+      <button
+        class="modal-close"
+        onclick="closeLogsModal()"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div id="admin-logs-list"></div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ==================================================
+     DAMAGED EQUIPMENT MODAL
+================================================== -->
+
+<div
+  id="damaged-modal"
+  class="modal-overlay"
+  style="display:none;"
+>
+
+  <div class="modal modal-large">
+
+    <div class="modal-header">
+
+      <h2>
+        อุปกรณ์ชำรุด
+      </h2>
+
+      <button
+        class="modal-close"
+        onclick="closeDamagedModal()"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div id="damaged-list"></div>
+
+  </div>
+
+</div>
+
+
+
+<div id="user-modal" class="modal-overlay" style="display:none;">
+  <div class="modal">
+    <div class="modal-header"><h2>เพิ่มผู้ใช้งาน</h2><button class="modal-close" onclick="closeUserModal()">×</button></div>
+    <form id="user-form">
+      <div class="form-group"><label>ชื่อ-นามสกุล</label><input id="u-name" required></div>
+      <div class="form-group"><label>รหัสพนักงาน / นักเรียน</label><input id="u-emp" placeholder="เช่น EMP-1001" required></div>
+      <div class="form-group"><label>ชื่อผู้ใช้งาน</label><input id="u-user" required></div>
+      <div class="form-group"><label>รหัสผ่าน</label><input type="password" id="u-pass" required></div>
+      <div class="form-group"><label>แผนก / ชั้นเรียน</label><input id="u-dept"></div>
+      <div class="form-group"><label>สิทธิ์</label><select id="u-role" class="form-select"><option value="user">ผู้ใช้งานทั่วไป</option><option value="admin">ผู้ดูแลคลัง</option></select></div>
+      <div class="modal-actions"><button type="button" class="secondary-button" onclick="closeUserModal()">ยกเลิก</button><button type="submit" class="primary-button">บันทึก</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- TOAST -->
+
+<div
+  id="toast"
+  class="toast"
+>
+  -
+</div>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>
